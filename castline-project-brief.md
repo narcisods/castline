@@ -50,17 +50,16 @@ This is same-day, not multi-day — tide state changes within a single day, so t
 
 The "why" is what makes this a real AI feature instead of a novelty — the ranking logic (what factors matter, how they interact — e.g. an incoming tide with a moderate swell might beat a bigger swell with the wrong wind direction) should be spelled out in the prompt/system design, not left implicit.
 
-## 4. Candidate data sources
+## 4. Data sources (confirmed 2026-09-13 via spike)
 
-To evaluate for reliability, coverage, and free-tier availability:
+Spiked against 3 real beaches (Ocean Beach SF, Manresa State Beach, Linda Mar Beach) — throwaway scripts in `backend/spikes/`. All four confirmed as reliable, free, hourly-resolution, no-API-key sources:
 
-- **NOAA CO-OPS Tides & Currents API** — tide predictions, free, no key required for basic use
-- **NOAA/NWS marine forecast API** or **Open-Meteo Marine API** — wave height/period/swell direction
-- **Open-Meteo** (general weather) — wind, pressure, precipitation, free, no key required
-- **Stormglass.io** — alternative all-in-one marine data source, has a free tier with rate limits
-- **Nominatim (OpenStreetMap)** — free forward geocoding to turn a typed beach name into lat/long coordinates; no API key, but respect usage-policy rate limits
+- **Nominatim (OpenStreetMap)** — forward geocoding, beach name → lat/long. **Finding:** a `"<name>, <city>, <state>"` query can return zero results when a beach's OSM entry isn't attributed to the city it's commonly associated with (e.g. "Manresa State Beach, Watsonville, CA" misses; "Manresa State Beach, CA" hits — it's actually tagged under Rio del Mar/Santa Cruz County). Production geocoding needs a state-only fallback query when the full query misses. Also respect the ~1 req/sec rate limit and set a real User-Agent identifying the app; a stray "Access denied" was seen once and didn't recur, so it may be transient/IP-based rather than deterministic — worth keeping a retry.
+- **NOAA CO-OPS Tides & Currents API** — tide predictions. **Finding:** stations are either **reference** (type `R`, full harmonic hourly curve at any datum) or **subordinate** (type `S`, offset-based — hi/lo events only, calculated from a linked `reference_id` station). The *nearest* station to a beach is often subordinate. Production normalization needs to: use the nearest station's hi/lo times directly (most locally accurate), but fetch the hourly tide curve from its `reference_id` when the nearest station doesn't serve `interval=h` (some subordinate stations do serve it directly — check per-station, don't assume). Also note: the `time_zone` param value is `lst_ldt`, not the more intuitive `lst_ld` (a real gotcha hit during the spike).
+- **Open-Meteo Marine API** — wave height/period/direction + swell height/period/direction, full 24-hour hourly coverage confirmed for all 3 beaches, including bay-sheltered ones.
+- **Open-Meteo (general weather)** — hourly wind speed/direction, surface pressure, precipitation, full 24-hour hourly coverage confirmed.
 
-(Final choice depends on what's actually available and reliable at hourly resolution for the real beaches I fish — worth spiking on this early.)
+**Not needed:** Stormglass.io and the NOAA/NWS marine forecast API — Open-Meteo Marine covered wave/swell data completely for all spiked beaches, so no second marine source is necessary.
 
 ## 5. Scope
 
