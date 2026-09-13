@@ -1,9 +1,14 @@
-const USER_AGENT = 'CastLine-Spike/0.1 (contact: narcisodsalvador@gmail.com)'
+const USER_AGENT = 'CastLine/0.1 (contact: narcisodsalvador@gmail.com)'
+const FALLBACK_DELAY_MS = 1100 // respect Nominatim's ~1 req/sec usage policy
 
 export interface GeocodeResult {
   lat: number
   lon: number
   displayName: string
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export async function geocode(query: string): Promise<GeocodeResult | null> {
@@ -24,6 +29,11 @@ export async function geocode(query: string): Promise<GeocodeResult | null> {
   return { lat: Number(first.lat), lon: Number(first.lon), displayName: first.display_name }
 }
 
+export interface GeocodeWithFallbackResult {
+  result: GeocodeResult
+  queryUsed: string
+}
+
 /**
  * Some beach names don't share OSM's town attribution (e.g. a beach commonly
  * associated with one town is actually tagged under a neighboring one), so a
@@ -34,12 +44,13 @@ export async function geocodeWithFallback(
   name: string,
   city: string,
   state: string,
-): Promise<{ result: GeocodeResult; queryUsed: string } | null> {
+  sleepFn: (ms: number) => Promise<void> = sleep,
+): Promise<GeocodeWithFallbackResult | null> {
   const fullQuery = `${name}, ${city}, ${state}`
   const full = await geocode(fullQuery)
   if (full) return { result: full, queryUsed: fullQuery }
 
-  await new Promise((resolve) => setTimeout(resolve, 1100))
+  await sleepFn(FALLBACK_DELAY_MS)
 
   const stateQuery = `${name}, ${state}`
   const stateOnly = await geocode(stateQuery)
