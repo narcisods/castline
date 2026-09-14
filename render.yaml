@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: castline-backend
+    runtime: node
+    plan: free
+    buildCommand: yarn install --immutable && yarn workspace backend build
+    startCommand: yarn workspace backend start
+    envVars:
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: NODE_ENV
+        value: production
