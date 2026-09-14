@@ -16,6 +16,7 @@ export interface HourlyConditions {
   swellHeightFt: number | null
   swellPeriodSec: number | null
   swellDirectionDeg: number | null
+  wavePowerKw: number | null // deep-water wave power flux, kW per meter of crest, from the swell component
   windSpeedMph: number | null
   windDirectionDeg: number | null
   pressureHpa: number | null

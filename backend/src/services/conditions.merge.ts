@@ -2,6 +2,7 @@ import { normalizeHourKey } from '../utils/date.js'
 import { parseNoaaNumber, type RawTidePrediction } from './noaaTides.js'
 import type { MarineHourly } from './marine.js'
 import type { WeatherHourly } from './weather.js'
+import { computeWavePowerKw } from './wavePower.js'
 import type { HourlyConditions, PressureTrend, TideEvent } from '../types/conditions.js'
 
 const PRESSURE_TREND_THRESHOLD_HPA = 1
@@ -48,7 +49,7 @@ function pressureTrend(current: number | null, previous: number | null): Pressur
 export function buildHourlyConditions(input: BuildHourlyConditionsInput): BuildHourlyConditionsResult {
   const warnings: string[] = []
 
-  type Row = Omit<HourlyConditions, 'pressureTrend'>
+  type Row = Omit<HourlyConditions, 'pressureTrend' | 'wavePowerKw'>
   const rows = new Map<string, Row>()
 
   function emptyRow(hourKey: string): Row {
@@ -120,6 +121,7 @@ export function buildHourlyConditions(input: BuildHourlyConditionsInput): BuildH
   const hourly: HourlyConditions[] = sortedRows.map((row, i) => ({
     ...row,
     pressureTrend: pressureTrend(row.pressureHpa, sortedRows[i - 1]?.pressureHpa ?? null),
+    wavePowerKw: computeWavePowerKw(row.swellHeightFt, row.swellPeriodSec),
   }))
 
   return { hourly, warnings }

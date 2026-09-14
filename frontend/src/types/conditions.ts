@@ -16,6 +16,7 @@ export interface HourlyConditions {
   swellHeightFt: number | null
   swellPeriodSec: number | null
   swellDirectionDeg: number | null
+  wavePowerKw: number | null
   windSpeedMph: number | null
   windDirectionDeg: number | null
   pressureHpa: number | null

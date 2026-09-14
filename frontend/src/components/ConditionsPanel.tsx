@@ -114,6 +114,7 @@ export function ConditionsPanel({ beach }: ConditionsPanelProps) {
               <TableHead>Tide</TableHead>
               <TableHead>Wave</TableHead>
               <TableHead>Swell</TableHead>
+              <TableHead>Power</TableHead>
               <TableHead>Wind</TableHead>
               <TableHead>Pressure</TableHead>
               <TableHead>Precip</TableHead>
@@ -130,6 +131,7 @@ export function ConditionsPanel({ beach }: ConditionsPanelProps) {
                 <TableCell>
                   {fmt(row.swellHeightFt, 'ft')} @ {fmt(row.swellPeriodSec, 's')}
                 </TableCell>
+                <TableCell>{fmt(row.wavePowerKw, 'kW/m')}</TableCell>
                 <TableCell>
                   {fmt(row.windSpeedMph, 'mph')} {row.windDirectionDeg ?? '—'}°
                 </TableCell>

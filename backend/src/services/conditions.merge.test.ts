@@ -59,6 +59,7 @@ describe('buildHourlyConditions', () => {
         waveHeightFt: 3.1,
         wavePeriodSec: 9,
         waveDirectionDeg: 270,
+        wavePowerKw: 2.01,
         swellHeightFt: 2,
         swellPeriodSec: 11,
         swellDirectionDeg: 280,

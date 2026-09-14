@@ -23,6 +23,7 @@ const FAKE_CONDITIONS = {
       swellHeightFt: 2.1,
       swellPeriodSec: 11,
       swellDirectionDeg: 280,
+      wavePowerKw: 2.34,
       windSpeedMph: 8,
       windDirectionDeg: 300,
       pressureHpa: 1015,
