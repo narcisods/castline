@@ -2,5 +2,5 @@
   "installCommand": "corepack yarn install --immutable",
   "buildCommand": "corepack yarn workspace frontend build",
   "outputDirectory": "frontend/dist",
-  "framework": "vite"
+  "framework": null
 }
