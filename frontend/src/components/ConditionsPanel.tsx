@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { TideChart } from '@/components/TideChart'
 import { getConditions } from '@/lib/api'
 import type { Beach } from '@/types/beach'
 
@@ -93,12 +94,16 @@ export function ConditionsPanel({ beach }: ConditionsPanelProps) {
         </Alert>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        {data.tideEvents.map((event) => (
-          <Badge key={event.time} variant={event.type === 'high' ? 'default' : 'secondary'}>
-            {event.type === 'high' ? 'High' : 'Low'} {event.heightFt}ft @ {formatTime(event.time)}
-          </Badge>
-        ))}
+      <div className="rounded-lg border p-4">
+        <h2 className="mb-3 text-sm font-medium text-muted-foreground">Today's tide</h2>
+        <TideChart hourly={data.hourly} tideEvents={data.tideEvents} date={data.date} />
+        <div className="mt-3 flex flex-wrap gap-2">
+          {data.tideEvents.map((event) => (
+            <Badge key={event.time} variant={event.type === 'high' ? 'default' : 'secondary'}>
+              {event.type === 'high' ? 'High' : 'Low'} {event.heightFt}ft @ {formatTime(event.time)}
+            </Badge>
+          ))}
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-lg border">
