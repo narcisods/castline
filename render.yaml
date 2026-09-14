@@ -3,8 +3,8 @@ services:
     name: castline-backend
     runtime: node
     plan: free
-    buildCommand: corepack enable yarn && yarn install --immutable && yarn workspace backend build
-    startCommand: corepack enable yarn && yarn workspace backend start
+    buildCommand: corepack yarn install --immutable && corepack yarn workspace backend build
+    startCommand: corepack yarn workspace backend start
     envVars:
       - key: FRONTEND_ORIGIN
         sync: false
