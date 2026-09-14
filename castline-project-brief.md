@@ -71,6 +71,10 @@ Spiked against 3 real beaches (Ocean Beach SF, Manresa State Beach, Linda Mar Be
 - Frontend view showing that consolidated data clearly for the selected beach
 - Deployed and publicly reachable with a real URL — V1 should be a genuinely finished product on its own
 
+**Seed list gap (2026-09-13):** 2 of the original 33 beach names couldn't be geocoded reliably and were dropped from the seed data rather than seeded with a wrong location — pick these up later via the app's own "add beach" flow once exact coordinates are known:
+- **China Beach (Capitola)** — OSM has no beach by this name near Capitola; the only "China Beach" it knows in Northern California is a different, well-known one in San Francisco's Richmond District.
+- **Esplanade Beach (Pacifica)** — OSM has no dedicated beach location here, only an "Esplanade Avenue" street; the beach is below the street near a past cliff collapse, but there's no precise node to geocode against.
+
 ### V2 scope (build after V1 is deployed and working)
 
 - Backend endpoint that fetches + normalizes today's data for *every* beach on the list, sends it to Claude, and returns a top-3 ranked list (spot, time window, explanation, confidence)

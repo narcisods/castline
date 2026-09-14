@@ -7,15 +7,22 @@ export interface GeocodeResult {
   displayName: string
 }
 
+/** [minLon, maxLat, maxLon, minLat] - Nominatim's viewbox order (left, top, right, bottom). */
+export type Viewbox = [number, number, number, number]
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-export async function geocode(query: string): Promise<GeocodeResult | null> {
+export async function geocode(query: string, viewbox?: Viewbox): Promise<GeocodeResult | null> {
   const url = new URL('https://nominatim.openstreetmap.org/search')
   url.searchParams.set('q', query)
   url.searchParams.set('format', 'json')
   url.searchParams.set('limit', '1')
+  if (viewbox) {
+    url.searchParams.set('viewbox', viewbox.join(','))
+    url.searchParams.set('bounded', '1')
+  }
 
   const res = await fetch(url, { headers: { 'User-Agent': USER_AGENT } })
   if (!res.ok) {
@@ -45,15 +52,16 @@ export async function geocodeWithFallback(
   city: string,
   state: string,
   sleepFn: (ms: number) => Promise<void> = sleep,
+  viewbox?: Viewbox,
 ): Promise<GeocodeWithFallbackResult | null> {
   const fullQuery = `${name}, ${city}, ${state}`
-  const full = await geocode(fullQuery)
+  const full = await geocode(fullQuery, viewbox)
   if (full) return { result: full, queryUsed: fullQuery }
 
   await sleepFn(FALLBACK_DELAY_MS)
 
   const stateQuery = `${name}, ${state}`
-  const stateOnly = await geocode(stateQuery)
+  const stateOnly = await geocode(stateQuery, viewbox)
   if (stateOnly) return { result: stateOnly, queryUsed: stateQuery }
 
   return null
